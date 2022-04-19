@@ -67,30 +67,16 @@ func syncAddress(cf_token, zone, hostname string) error {
 		return fmt.Errorf("no records found for %v in zone %v", hostname, zone)
 	}
 
-	defRoute := net.ParseIP("0.0.0.0")
+	defRoute := net.ParseIP("8.8.8.8")
 	routes, err := netlink.RouteGet(defRoute)
 	if err != nil {
 		return fmt.Errorf("failed to get default route:\n\t%w\n", err)
 	}
 
 	if len(routes) < 1 {
-		return fmt.Errorf("no default route found")
+		return fmt.Errorf("no route found to 8.8.8.8")
 	}
 
-	link, err := netlink.LinkByIndex(routes[0].LinkIndex)
-	if err != nil {
-		return fmt.Errorf("failed to get the link by the index %v:\n\t%w\n", routes[0].LinkIndex, err)
-	}
-
-	addresses, err := netlink.AddrList(link, netlink.FAMILY_V4)
-	if err != nil {
-		return fmt.Errorf("failed to get list of address for link %v:\n\t%w\n", link.Attrs().Name, err)
-	}
-
-	if len(addresses) < 1 {
-		return fmt.Errorf("no addresses found on link %v\n", link.Attrs().Name)
-	}
-
-	fmt.Println(recs[0].Content, link.Attrs().Name, addresses[0].IP.String())
+	fmt.Println(recs[0].Content, routes[0].Src.String())
 	return nil
 }
