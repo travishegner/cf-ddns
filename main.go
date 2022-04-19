@@ -20,9 +20,15 @@ func main() {
 		log.Fatalf("CF_API_TOKEN environment variable must be set\n")
 	}
 
-	//set these from environment or cli args
-	zoneName := "travishegner.com"
-	recordName := "travishegner.com"
+	zoneName, ok := os.LookupEnv("CF_ZONE_NAME")
+	if !ok {
+		log.Fatalf("CF_ZONE_NAME environment variable must be set\n")
+	}
+
+	recordName, ok := os.LookupEnv("CF_RECORD_NAME")
+	if !ok {
+		log.Fatalf("CF_RECORD_NAME environment variable must be set\n")
+	}
 
 	defRoute := net.ParseIP("8.8.8.8")
 	routes, err := netlink.RouteGet(defRoute)
