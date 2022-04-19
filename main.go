@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -30,6 +31,17 @@ func main() {
 		log.Fatalf("CF_RECORD_NAME environment variable must be set\n")
 	}
 
+	var sis string
+	sis, ok = os.LookupEnv("CF_SYNC_INTERVAL_MINUTES")
+	if !ok {
+		sis = "10"
+	}
+
+	sii, err := strconv.ParseInt(sis, 10, 64)
+	if err != nil {
+		log.Fatalf("failed to parse sync interval string %v:\n\t%v\n", sis, err)
+	}
+
 	defRoute := net.ParseIP("8.8.8.8")
 	routes, err := netlink.RouteGet(defRoute)
 	if err != nil {
@@ -42,7 +54,7 @@ func main() {
 
 	localAddress := routes[0].Src.String()
 	localLink := routes[0].LinkIndex
-	syncInterval := 10 * time.Minute
+	syncInterval := time.Duration(sii) * time.Minute
 
 	err = syncAddress(cf_token, zoneName, recordName, localAddress)
 	if err != nil {

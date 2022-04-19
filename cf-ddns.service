@@ -1,0 +1,13 @@
+[Unit]
+Description=Dynamic DNS utility to update cloudflare DNS
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Environment=CF_API_TOKEN=<your_token_here>
+Environment=CF_ZONE_NAME=travishegner.com
+Environment=CF_RECORD_NAME=travishegner.com
+ExecStart=/usr/local/bin/cf-ddns
+
+[Install]
+WantedBy=network-online.target
