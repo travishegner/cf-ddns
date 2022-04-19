@@ -77,6 +77,17 @@ func syncAddress(cf_token, zone, hostname string) error {
 		return fmt.Errorf("no route found to 8.8.8.8")
 	}
 
-	fmt.Println(recs[0].Content, routes[0].Src.String())
+	if recs[0].Content != routes[0].Src.String() {
+		log.Printf("dns record points to %v, but our interface is %v. Updating dns record...", recs[0].Content, routes[0].Src.String())
+		newRec := cloudflare.DNSRecord{Type: "A", Name: hostname, Content: routes[0].Src.String(), TTL: 60}
+		err = api.UpdateDNSRecord(ctx, zoneID, recs[0].ID, newRec)
+		if err != nil {
+			return fmt.Errorf("failed to update record %v to content %v:\n\t%w\n", hostname, routes[0].Src.String(), err)
+		}
+		return nil
+	}
+
+	log.Printf("dns record matches local interface, no updates necessary")
+
 	return nil
 }
