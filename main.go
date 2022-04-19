@@ -73,6 +73,10 @@ func syncAddress(cf_token, zone, hostname string) error {
 		return fmt.Errorf("failed to get default route:\n\t%w\n", err)
 	}
 
+	for _, r := range routes {
+		fmt.Println(r)
+	}
+
 	if len(routes) < 1 {
 		return fmt.Errorf("no default route found")
 	}
