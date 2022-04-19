@@ -91,6 +91,6 @@ func syncAddress(cf_token, zone, hostname string) error {
 		return fmt.Errorf("no addresses found on link %v\n", link.Attrs().Name)
 	}
 
-	fmt.Println(recs[0].Content, addresses[0].IP.String())
+	fmt.Println(recs[0].Content, link.Attrs().Name, addresses[0].IP.String())
 	return nil
 }
